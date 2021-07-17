@@ -9,7 +9,7 @@ const body_parser = require('body-parser');
 
 
 // declaring port
-const PORT = 3001 || process.env.PORT;
+const PORT = process.env.PORT;
 
 
 
