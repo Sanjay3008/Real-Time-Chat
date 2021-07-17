@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <title>Real Chat</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link href="css/style.css" rel="stylesheet">
+
+
+</head>
+
+<body>
+
+    <div class="form-container">
+
+        <div class="form-header">
+            <img class="chat_icon" src="images/chat_icon.svg">
+            <div class="title">Welcome to Real Chat</div>
+        </div>
+        <form id="join-room" enctype="application/x-www-form-urlencoded">
+            <div class="form-control1">
+                <input type="text" name="username" id="username" placeholder="Enter your Name" required>
+            </div>
+            <div class="form-control1">
+                <input type="text" name="group_name" id="group_name" placeholder="Enter your Group Name" required>
+            </div>
+            <div class="form-control1">
+                <input type="text" name="group_pass" id="group_pass" placeholder="Enter your Group Password" required>
+            </div>
+
+            <div class="form-control1">
+                <button type="submit" class="btn btn-info">Join Group</button>
+            </div>
+            <div class="alert success">{{GroupMessage}}</div>
+        </form>
+
+    </div>
+    <h4><b>OR</b></h4>
+    <div class="create_group">
+        <div class="create_group_header">
+            <img class="chat_icon" src="images/question-solid.svg">
+            <h2>Dosen't Have a Group</h2>
+        </div>
+        <button class="createbtn btn btn-light">Create Group</button>
+
+
+    </div>
+
+    <div class="popup">
+        <div class="close-btn">&times;</div>
+        <div class="new_group_form">
+            <h2>New Group</h2>
+
+            <form action="/create-group" method="POST">
+                <div class="form-element1">
+                    <label for="email">Organizer Email</label>
+                    <input type="text" name="email" placeholder="Enter Your Email" required>
+                </div>
+                <div class="form-element1">
+                    <label for="email">Group Name</label>
+                    <input type="text" name="group_name" placeholder="Enter Your Group Name" required>
+                </div>
+                <div class="form-element1">
+                    <label for="password">Password</label>
+                    <input type="password" name="password" placeholder="Enter Your Password" required>
+                </div>
+                <div class="form-control2">
+                    <button type="submit" class="btn btn-info">Create New Group</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+
+
+    <script src="js/main.js"></script>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qs/6.10.1/qs.min.js" integrity="sha512-aTKlYRb1QfU1jlF3k+aS4AqTpnTXci4R79mkdie/bp6Xm51O5O3ESAYhvg6zoicj/PD6VYY0XrYwsWLcvGiKZQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+</body>
+
+</html>

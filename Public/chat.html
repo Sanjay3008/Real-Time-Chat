@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <title>Real Chat</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="-1" />
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link href="css/chat.css" rel="stylesheet">
+</head>
+
+<body>
+
+
+    <div class="chat-box-full">
+        <div class="chat-header-body">
+            <div class="chat-nav">
+                <div class="group-details">
+                    <div class="group-img">
+                        <img src="images/group.svg">
+                    </div>
+                    <div class="group-name">
+                        Group Name
+                    </div>
+                    <div class="group-name-v">
+                        <h2 id="group-name-t"></h2>
+                    </div>
+                </div>
+
+                <div class="group-users">
+                    <div class="group-users-title">
+                        Users
+                    </div>
+                    <div class="group-members" id="members-list">
+
+
+                    </div>
+                </div>
+
+            </div>
+            <div class="chat-area">
+                <div class="chat-title-msg">
+                    <div class="chat_app_name">
+                        Real Time Chat
+                    </div>
+
+                    <form action="/leave-Group" method="POST">
+                        <div class="leave-group" id="leave_room">
+                            <button type="submit" id="leaveroom">Leave Group</button>
+                        </div>
+                    </form>
+
+                </div>
+                <div id="chat-group-msgs">
+
+                </div>
+            </div>
+        </div>
+        <div class="enter-msg">
+            <form id="chat-form">
+                <input id="msg" name="msg_sent" type="text" placeholder="Enter Message" required autocomplete="off" />
+                <button type="submit" class="btn"><img src="images/send_message.png"></button>
+            </form>
+        </div>
+
+
+    </div>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qs/6.10.1/qs.min.js" integrity="sha512-aTKlYRb1QfU1jlF3k+aS4AqTpnTXci4R79mkdie/bp6Xm51O5O3ESAYhvg6zoicj/PD6VYY0XrYwsWLcvGiKZQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <script src="/socket.io/socket.io.js">
+    </script>
+    <script src="js/chat.js"></script>
+
+</body>
+
+
+</html>
