@@ -51,6 +51,13 @@ h4 {
     margin-right: 25%;
 }
 
+form i {
+    margin-left: -50px;
+    position: absolute;
+    cursor: pointer;
+    color: brown;
+}
+
 .chat_icon {
     width: 40px;
     height: 30px;
@@ -62,7 +69,7 @@ h4 {
 }
 
 .form-container input[type="text"] {
-    width: 80%;
+    width: 85%;
     border-radius: 13px;
     border-color: none;
     background-color: rgb(252, 250, 250);
@@ -71,7 +78,21 @@ h4 {
     font-family: Montserrat;
     color: #000;
     font-weight: 400;
-    font-size: 15px;
+    font-size: 18px;
+    outline: none;
+}
+
+.form-container input[type="password"] {
+    width: 85%;
+    border-radius: 13px;
+    border-color: none;
+    background-color: rgb(252, 250, 250);
+    border: 1px solid;
+    height: 40px;
+    font-family: Montserrat;
+    color: #000;
+    font-weight: 400;
+    font-size: 18px;
     outline: none;
 }
 
@@ -81,12 +102,15 @@ h4 {
     font-family: Montserrat;
 }
 
-.fomr-control1 {
-    margin-bottom: 20px;
+.form-control1 {
+    margin-bottom: 10px;
 }
 
-.btn-info {
-    margin-top: 20px;
+.btn-info,
+.btn-danger {
+    margin: 10px 10px 0px 2px;
+    font-family: Montserrat;
+    font-size: 20px;
 }
 
 
@@ -99,11 +123,12 @@ h4 {
     display: inline-flex;
 }
 
-.createbtn {
+.btn-group .createbtn {
     display: block;
-    margin-left: auto;
-    margin-right: auto;
+    margin-right: 10px;
+    margin-left: 10px;
     width: auto;
+    margin-bottom: 10px;
 }
 
 .create_group {
@@ -118,15 +143,30 @@ h4 {
     margin-right: 25%;
 }
 
-.btn-light {
+.reset_password {
+    background-color: rgb(240, 191, 100);
+    font-size: 30px;
+    margin: 20px;
+    padding: 5px;
+    text-align: center;
+    width: fit-content;
+}
+
+.btn-group .resetbtn {
+    display: block;
+    border-radius: 5px;
+    width: auto;
+    margin-right: 10px;
+    margin-left: 10px;
     margin-bottom: 10px;
 }
 
-.popup {
+.popup,
+.popup_reset {
     position: absolute;
     left: 50%;
     visibility: hidden;
-    transform: translate(-50%, -140%) scale(1.25);
+    transform: translate(-5100%, -300%) scale(1.25);
     padding: 20px 20px;
     background: rgb(247, 226, 226);
     box-shadow: 2px 2px 5px 5px rgba(0, 0, 0, 0.15);
@@ -137,11 +177,20 @@ h4 {
 
 .popup.active {
     visibility: visible;
-    transform: translate(-50%, -95%) scale(1.25);
+    transform: translate(-50%, -100%) scale(1.25);
+    z-index: 999;
     transition: top 0ms ease-in-out 0ms, opacity 200ms ease-in-out 0ms, transform 20ms ease-in-out 0ms;
 }
 
-.popup .close-btn {
+.popup_reset.active {
+    visibility: visible;
+    transform: translate(-50%, -125%) scale(1.25);
+    z-index: 999;
+    transition: top 0ms ease-in-out 0ms, opacity 200ms ease-in-out 0ms, transform 20ms ease-in-out 0ms;
+}
+
+.popup .close-btn,
+.popup_reset .close-btn-reset {
     position: absolute;
     top: 10px;
     right: 10px;
@@ -153,6 +202,18 @@ h4 {
     line-height: 15px;
     border-radius: 15px;
     cursor: pointer;
+}
+
+.eye-span {
+    position: absolute;
+    margin-top: 15px;
+    margin-right: 50px;
+    cursor: pointer;
+}
+
+.fa-eye,
+.fa-eye-slash {
+    font-size: 80%;
 }
 
 .new_group_form h2 {
@@ -178,11 +239,13 @@ input[type="password"] {
     outline: none;
 }
 
-.popup .new_group_form .form-elemenet1 {
+.popup .new_group_form .form-elemenet1,
+.popup_reset .new_group_form .form-elemenet1 {
     margin: 15px 0px;
 }
 
-.popup .new_group_form .form-elemenet1 label {
+.popup .new_group_form .form-elemenet1 label,
+.popup_reset .new_group_form .form-elemenet1 label {
     font-size: 22px;
     color: #222;
 }
@@ -204,19 +267,91 @@ input[type="password"] {
     }
 }
 
-@media only screen and (max-width: 500px) {
+@media only screen and (max-width: 1000px) {
     .form-header .title {
-        font-size: 15px;
+        font-size: 18px;
     }
     .create_group_header h2 {
-        font-size: 15px;
+        font-size: 18px;
     }
     .chat_icon {
-        width: 20px;
-        height: 30px;
+        width: 30px;
+        height: 20px;
         vertical-align: auto;
     }
     .new_group_form .h2 {
         font-size: 20px;
+    }
+    #username,
+    #group_name,
+    #group_pass,
+    #group_pass_reset,
+    #group_pass_reset_confirm {
+        font-size: 15px;
+    }
+    .form-container {
+        margin-left: auto;
+        width: 70%;
+        margin-right: auto;
+    }
+    .create_group {
+        width: 70%;
+        margin-left: 15%;
+        margin-right: 15%;
+    }
+    .form-container input[type="text"] {
+        font-size: 20px;
+    }
+    .form-container input[type="password"] {
+        font-size: 20px;
+    }
+    .btn-info,
+    .btn-danger {
+        margin: 10px 10px 0px 2px;
+        font-family: Montserrat;
+        font-size: 18px;
+    }
+}
+
+@media only screen and (max-width: 500px) {
+    .form-container {
+        margin-left: auto;
+        width: 90%;
+        margin-right: auto;
+    }
+    .form-container input[type="text"] {
+        font-size: 15px;
+        width: 90%;
+    }
+    .form-container input[type="password"] {
+        font-size: 15px;
+        width: 90%;
+    }
+    .fa-eye,
+    .fa-eye-slash {
+        font-size: 60%;
+        margin-top: 5px;
+    }
+    .btn-info,
+    .btn-danger {
+        margin: 10px 10px 0px 2px;
+        font-family: Montserrat;
+        font-size: 13px;
+    }
+    .popup.active {
+        visibility: visible;
+        transform: translate(-50%, -105%) scale(1.25);
+        transition: top 0ms ease-in-out 0ms, opacity 200ms ease-in-out 0ms, transform 20ms ease-in-out 0ms;
+    }
+    .popup_reset.active {
+        visibility: visible;
+        transform: translate(-50%, -125%) scale(1.25);
+        transition: top 0ms ease-in-out 0ms, opacity 200ms ease-in-out 0ms, transform 20ms ease-in-out 0ms;
+    }
+    .new_group_form h2 {
+        font-size: 18px;
+    }
+    .create_group_header div {
+        font-size: 18px;
     }
 }

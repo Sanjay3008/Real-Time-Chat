@@ -1,4 +1,4 @@
-document.querySelector(".create_group").addEventListener("click", () => {
+document.querySelector(".create_group .btn-group .createbtn").addEventListener("click", () => {
     document.querySelector(".popup").classList.add("active")
 })
 
@@ -7,49 +7,65 @@ document.querySelector(".popup .close-btn").addEventListener("click", () => {
     document.querySelector(".popup").classList.remove("active")
 })
 
+document.querySelector(".create_group .btn-group .resetbtn").addEventListener("click", () => {
+    document.querySelector(".popup_reset").classList.add("active")
+})
+
+document.querySelector(".popup_reset .close-btn-reset").addEventListener("click", () => {
+
+    document.querySelector(".popup_reset").classList.remove("active")
+})
 
 
+const togglePassword = document.querySelector('#eyespan');
+const password = document.querySelector('#group_pass');
+togglePassword.addEventListener('click', function(e) {
+    // toggle the type attribute
+    const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
 
-var form = document.getElementById('join-room');
+    if (type === 'password') {
+        document.getElementById('eyespan').innerHTML = `<i class="fa fa-eye-slash" aria-hidden="true"></i>`
 
-form.addEventListener('submit', function(e) {
 
-    e.preventDefault();
+    } else if (type === 'text') {
+        console.log('text');
+        document.getElementById('eyespan').innerHTML = `<i class="fa fa-eye" aria-hidden="true"></i>`
 
-    var group = document.getElementById('group_name').value;
-    var pass = document.getElementById('group_pass').value;
-
-    const data = { group, pass };
-
-    const options = {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
     }
+    password.setAttribute('type', type);
 
-    validate(options);
 });
 
-async function validate(options) {
-    const response = await fetch('/group_password_validate', options);
-    const data = await response.json();
+var x = $(window).width();
 
-    var res = data.MSG;
+if (x <= 500) {
+    document.getElementById('username').placeholder = 'Name';
+    document.getElementById('group_name').placeholder = 'Group Name';
+    document.getElementById('group_pass').placeholder = 'Group Pass';
 
-    var group = document.getElementById('group_name');
-    var pass = document.getElementById('group_pass');
-    if (res === "Group Found") {
-        form.action = "chat.html";
-        form.submit();
-    } else if (res === "Password Incorrect") {
-        pass.value = "";
-        alert("Password Incorrect");
-    } else {
-        group.value = "";
-        pass.value = "";
-        alert("Group Not Found");
-    }
+    document.getElementById('c_useremail').placeholder = 'Email';
+    document.getElementById('c_group_name').placeholder = 'Group Name';
+    document.getElementById('c_group_pass').placeholder = 'Group Pass';
+
+    document.getElementById('reset_group_name').placeholder = 'Group Name';
+    document.getElementById('reset_useremail').placeholder = 'Admin Pass';
+    3
+    document.getElementById('reset_group_name_l').innerText = 'Group Name';
+    document.getElementById('reset_useremail_l').innerText = 'Admin Email';
+
+} else {
+    document.getElementById('username').placeholder = 'Enter Your Name';
+    document.getElementById('group_name').placeholder = 'Enter Your Group Name';
+    document.getElementById('group_pass').placeholder = 'Enter Your Group Pass';
+
+    document.getElementById('c_useremail').placeholder = 'Enter your Email';
+    document.getElementById('c_group_name').placeholder = 'Enter Group Your Name';
+    document.getElementById('c_group_pass').placeholder = 'Enter Group Your Pass';
+
+    document.getElementById('reset_group_name').placeholder = 'Enter Group Name';
+    document.getElementById('reset_useremail').placeholder = 'Enter Admin Email';
+
+    document.getElementById('reset_group_name_l').innerText = 'Enter Group  Name';
+    document.getElementById('reset_useremail_l').innerText = 'Enter Admin Email';
 
 }

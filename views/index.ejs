@@ -5,9 +5,13 @@
 <head>
     <title>Real Chat</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="-1" />
 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/fontawesome.min.css">
+
+    <script src="https://kit.fontawesome.com/c08eeaa21f.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <link href="css/style.css" rel="stylesheet">
 
@@ -17,79 +21,134 @@
 <body>
 
 
-    <%if (Messages.length > 0) { %>
-        <div id="messages" class="alert alert-info" role="alert">
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <div id="messages_content">
-                <%= GroupMessage %>
-            </div>
+
+
+
+    <div id="messages" class="alert alert-info" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <div id="messages_content">
+            <%= GroupMessage %>
         </div>
-        <% } %>
+    </div>
 
-            <div class="form-container">
 
-                <div class="form-header">
-                    <img class="chat_icon" src="images/chat_icon.svg">
-                    <div class="title">Welcome to Real Chat</div>
-                </div>
-                <form id="join-room" enctype="application/x-www-form-urlencoded">
-                    <div class="form-control1">
-                        <input type="text" name="username" id="username" placeholder="Enter your Name" required>
-                    </div>
-                    <div class="form-control1">
-                        <input type="text" name="group_name" id="group_name" placeholder="Enter your Group Name" required>
-                    </div>
-                    <div class="form-control1">
-                        <input type="text" name="group_pass" id="group_pass" placeholder="Enter your Group Password" required>
-                    </div>
+    <div class="form-container">
 
-                    <div class="form-control1">
-                        <button type="submit" class="btn btn-info">Join Group</button>
-                    </div>
-                </form>
+        <div class="form-header">
 
+
+            <img class="chat_icon" src="images/chat_icon.svg">
+
+            <div class="title">Welcome to Real Chat</div>
+
+
+
+        </div>
+
+        <form action="/join-room" method='POST' id="join-room">
+            <div class="form-control1">
+                <input type="text" name="username" id="username" placeholder="Enter your Name" required>
             </div>
-            <h4><b>OR</b></h4>
-            <div class="create_group">
-                <div class="create_group_header">
-                    <img class="chat_icon" src="images/question-solid.svg">
-                    <h2>Dosen't Have a Group</h2>
-                </div>
-                <button class="createbtn btn btn-light">Create Group</button>
-
+            <div class="form-control1">
+                <input type="text" name="group_name" id="group_name" placeholder="Enter your Group Name" required>
+            </div>
+            <div class="form-control1">
+                <input type="password" name="group_pass" id="group_pass" placeholder="Enter your Group Password" required>
+                <span class="eye-span" id="eyespan"><i class="fa fa-eye-slash" aria-hidden="true" id="eye"></i></span>
             </div>
 
-            <div class="popup">
-                <div class="close-btn">&times;</div>
-                <div class="new_group_form">
-                    <h2>New Group</h2>
+            <div class="form-control1 btn-group">
+                <button type="submit" class="btn btn-info">Join Group</button>
 
-                    <form action="/create-group" method="POST">
-                        <div class="form-element1">
-                            <label for="email">Organizer Email</label>
-                            <input type="text" name="email" placeholder="Enter Your Email" required>
-                        </div>
-                        <div class="form-element1">
-                            <label for="email">Group Name</label>
-                            <input type="text" name="group_name" placeholder="Enter Your Group Name" required>
-                        </div>
-                        <div class="form-element1">
-                            <label for="password">Password</label>
-                            <input type="password" name="password" placeholder="Enter Your Password" required>
-                        </div>
-                        <div class="form-control2">
-                            <button type="submit" class="btn btn-info">Create New Group</button>
-                        </div>
-                    </form>
+            </div>
+        </form>
+
+
+
+
+    </div>
+    <h4><b>OR</b></h4>
+
+    <div class="create_group">
+
+        <div class="create_group_header">
+
+            <div>Dosen't Have a Group // Forget Password </div>
+        </div>
+
+        <div class="btn-group">
+            <button class="createbtn btn btn-light">Create Group</button>
+            <button class="resetbtn btn btn-light">Reset Password</button>
+        </div>
+
+    </div>
+
+    <div class="popup">
+        <div class="close-btn">&times;</div>
+        <div class="new_group_form">
+            <h2>New Group</h2>
+
+            <form action="/create-group" method="POST">
+                <div class="form-element1">
+                    <label for="email">Organizer Email</label>
+                    <input type="text" id="c_useremail" name="email" placeholder="Enter Your Email" required>
+                </div>
+                <div class="form-element1">
+                    <label for="email">Group Name</label>
+                    <input type="text" name="group_name" id="c_group_name" placeholder="Enter Your Group Name" required>
+                </div>
+                <div class="form-element1">
+                    <label for="password">Password</label>
+                    <input type="password" name="password" id="c_group_pass" placeholder="Enter Your Password" required>
+                </div>
+                <div class="form-control2">
+                    <button type="submit" class="btn btn-info">Create New Group</button>
 
                 </div>
-            </div>
+            </form>
+
+        </div>
+    </div>
+    <div class="popup_reset">
+        <div class="close-btn-reset">&times;</div>
+        <div class="new_group_form">
+            <h2>Reset Password</h2>
+
+            <form action="/password-reset" method="POST">
+                <div class="form-element1">
+                    <label id="reset_useremail_l" for="email">Enter Your Email</label>
+                    <input type="text" id="reset_useremail" name="email" placeholder="Enter Your Email" required>
+                </div>
+                <div class="form-element1">
+                    <label id="reset_group_name_l" for="email">Enter Your Group Name</label>
+                    <input type="text" name="group_name" id="reset_group_name" placeholder="Enter Your Group Name" required>
+                </div>
+                <div class="form-control2">
+                    <button type="submit" class="btn btn-info">Send Reset Link</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
 
 
 
-            <script src="js/main.js"></script>
-            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-            <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script src="js/main.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+    <script>
+        // stringify the data passed from router to ejs (within the EJS template only) var msge =
+        let msg = '<%=GroupMessage%>';
+        console.log(msg.length)
+        if (msg.length === 0) {
+            $('#messages').hide();
+        } else {
+            $('#messages').fadeIn();
+        }
+        localStorage.clear();
+    </script>
+
 
 </body>
 

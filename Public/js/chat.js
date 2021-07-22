@@ -1,8 +1,11 @@
 // MongoDB
 let x = document.cookie;
-const { username, group_name, group_pass } = Qs.parse(location.search, {
-    ignoreQueryPrefix: true
-})
+const username = document.getElementById('member').textContent;
+const group_name = document.getElementById('group-name-t').textContent;
+// const { username, group_name } = Qs.parse(location.search, {
+//     ignoreQueryPrefix: true
+// })
+
 
 
 const chatMessages = document.getElementById('chat-group-msgs');
@@ -110,7 +113,7 @@ function outputMessage(message) {
 // room name and users list
 
 socket.on('roomUsers', ({ group_name, users }) => {
-    outputRoomName(group_name);
+
     outputUsers(users);
 })
 
@@ -127,3 +130,5 @@ function outputUsers(users) {
     list.innerHTML = `${ users.map(user => `<div class="member">${user.username}</div>`).join('')}`;
 
 }
+
+console.log(document.getElementById('group-name-t').textContent);
