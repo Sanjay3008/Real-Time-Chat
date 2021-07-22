@@ -367,6 +367,8 @@ app.post("/create-group", async function(req, res) {
 
 
     var myData = new Group(req.body);
+
+    myData.group_name = myData.group_name.toLowerCase();
     myData.resetToken = null;
     myData.expireDate = null;
 
