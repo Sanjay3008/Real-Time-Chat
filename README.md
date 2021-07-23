@@ -1,4 +1,4 @@
-# Real-Time-Chat
+# <center>Real-Time-Chat</center>
 
 This Real Time chat is built using HTML CSS and JavaSCript. Chat Group can be Created using this Platform with password and the Data will be Stored in MongoDB. This app works with the 
 help of Socket.io which will listen on each user and send the messages to server and broadcast to the group members.
