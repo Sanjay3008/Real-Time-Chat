@@ -7,37 +7,37 @@ help of Socket.io which will listen on each user and send the messages to server
 
 # ----- BackEnd ------
 
-**** server ****
+<ins>Server</ins>
 1.Node Js
 2.Express
 3. NPM
 
-**** chat *****
+<ins>Chat</ins>
 1. Socket.io --- listen on client and server side
 
 
-**** Encryption ****
+<ins>Encryption</ins>
 1. Brcrypt.js --- Hashing the Passwords
 
 
-**** Token Generation ****
+<ins>Token Generation</ins>
 1. crypto --- generate 32/64 bit random characters for token
 
-**** Send Email ****
+<ins>Send Email</ins>
 1. Nodemailer
 2. Google-APIs
 
-*** Flash Message ***
+<ins>Flash Message</ins>
 1. connect-flash
 
-*** Template ****
+<ins>Template</ins>
 1. EJS
 
-# ---- Front End ------
+# ---- <ins>Front End</ins> ------
 1. Html
 2. Css
 3. Javascript
 
-# ---- DataBase ----
+# ---- <ins>DataBase</ins> ----
 
 1. MongoDB - Atlas
