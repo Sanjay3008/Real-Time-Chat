@@ -79,9 +79,10 @@ app.use(function(req, res, next) {
 /* ---------------------------   MONGO-DB CONNECTION AND DATABASE--------------------------------*/
 var mongoose = require("mongoose");
 mongoose.Promise = global.Promise;
-mongoose.connect("mongodb+srv://admin-sanjay:" + process.env.DB_PASS + "@cluster0.tannl.mongodb.net/Real_Time_chat?retryWrites=true&w=majority", { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect("mongodb+srv://admin-sanjay:" + process.env.DB_PASS + "@cluster0.tannl.mongodb.net/Real_Time_chat?retryWrites=true&w=majority", { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true });
 
 var nameSchema = new mongoose.Schema({
+
     email: {
         type: String,
         required: true
@@ -95,9 +96,15 @@ var nameSchema = new mongoose.Schema({
         required: true
     },
     resetToken: String,
-    expireDate: Date
-
+    expireDate: Date,
+    emailVerified: String,
+    emailVerificationToken: String,
+    emailVerificationTokenExpireDate: Date
 });
+
+//nameSchema.index({ emailVerificationTokenExpireDate: 1 }, { expireAfterSeconds: 0, partialFilterExpression: { emailVerified: 'no' } });
+
+//nameSchema.index({ "expire_at": 1 }, { expireAfterSeconds: 60 });
 
 const Group = mongoose.model("Groups", nameSchema);
 
@@ -178,9 +185,6 @@ io.on("connection", function(socket) {
 // default home route
 app.get("/", function(req, res) {
 
-
-    //sendMail().then(result => console.log(result)).catch(error => console.log(error.Messages))
-
     res.render('index', {
         GroupMessage: req.flash('Group-Message'),
         Messages: msgs
@@ -193,7 +197,6 @@ app.post("/leave-group", function(req, res) {
     req.flash('Group-Message', 'You Left The Group');
     msgs.push('Msg inserted');
     res.header('Cache-Control', 'no-cache');
-    res.header('Expires', 'Fri, 31 Dec 1998 12:00:00 GMT');
     req.logout();
     req.session.destroy(function() {});
     res.header('Cache-Control', 'no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0');
@@ -205,7 +208,7 @@ app.post("/join-room", async function(req, res) {
 
     console.log(req.get('host'));
     var userjoin = req.body.username;
-    var groupjoin = req.body.group_name;
+    var groupjoin = req.body.group_name.toLowerCase();
     var grouppass = req.body.group_pass;
 
     const group = await Group.findOne({ group_name: groupjoin }).then(async response => {
@@ -216,19 +219,25 @@ app.post("/join-room", async function(req, res) {
             res.redirect('/')
         } else {
 
-            bcrypt.compare(grouppass, response.password, function(err, matched) {
-                if (err) {
-                    console.log(err);
-                }
-                if (!matched) {
-                    req.flash('Group-Message', 'Group Found. Password Incorrect');
-                    msgs.push('Msg inserted');
-                    res.redirect('/')
-                } else {
-                    res.render('chat', { user: userjoin, group: groupjoin });
-                }
+            if (response.emailVerified === 'no' || !(response.emailVerificationToken === null) || !(response.emailVerificationTokenExpireDate === null)) {
+                req.flash('Group-Message', 'Group Email Not Registered. Please register via sent link if valid');
+                msgs.push('Msg inserted');
+                res.redirect('/')
+            } else {
+                bcrypt.compare(grouppass, response.password, function(err, matched) {
+                    if (err) {
+                        console.log(err);
+                    }
+                    if (!matched) {
+                        req.flash('Group-Message', 'Group Found. Password Incorrect');
+                        msgs.push('Msg inserted');
+                        res.redirect('/')
+                    } else {
+                        res.render('chat', { user: userjoin, group: groupjoin });
+                    }
 
-            });
+                });
+            }
 
 
         }
@@ -238,7 +247,7 @@ app.post("/join-room", async function(req, res) {
 app.post('/password-reset', async function(req, res) {
 
     var email = req.body.email;
-    var group = req.body.group_name;
+    var group = req.body.group_name.toLowerCase();
 
     const group_res = await Group.findOne({ group_name: group, email: email }).then(async Group => {
 
@@ -253,7 +262,11 @@ app.post('/password-reset', async function(req, res) {
                 }
                 const token = buffer.toString('hex');
                 Group.resetToken = token;
-                Group.expireDate = Date.now() + 3600000;
+                var n = new Date();
+                n.setHours(n.getHours + 1);
+                n.toLocaleString(undefined, { timeZone: 'Asia/Kolkata' })
+
+                Group.expireDate = n;
 
                 Group.save().then(async(saved) => {
                     if (saved) {
@@ -281,7 +294,8 @@ app.post('/password-reset', async function(req, res) {
                             text: `Hello ${group}! We arethere to help you. It is Real Chat and not a spam`,
                             html: `
                                 <p> You have requested Password Reset for Real Time Chat ${group}</p>
-                                <h5>Click on this <a href=${link}>Link</a> to reset Password</h5>`
+                                <h5>Click on this <a href=${link}>Link</a> to reset Password</h5>
+                                <p>The Password Reset Link will be valid till ${n}`
 
                         }
 
@@ -304,6 +318,8 @@ app.post('/password-reset', async function(req, res) {
     });
 })
 
+
+
 app.get('/password-reset/:groupName/:token', async function(req, res) {
 
     const token = req.params.token;
@@ -318,7 +334,7 @@ app.get('/password-reset/:groupName/:token', async function(req, res) {
             req.flash('Group-Message', 'Invalid Request!!');
             msgs.push('Msg inserted');
             res.redirect('/');
-        } else if (Date.now() < Group.expireDate) {
+        } else if (new Date() < Group.expireDate) {
             req.flash('Group-Message', '')
             res.render('reset_password', {
                 GroupMessage: req.flash('Group-Message'),
@@ -340,6 +356,54 @@ app.get('/password-reset/:groupName/:token', async function(req, res) {
 
 })
 
+app.get('/email-verify/:groupName/:token', async function(req, res) {
+
+    var GROUP_NAME = req.params.groupName;
+    var TOKEN = req.params.token;
+
+    const group_email_verify = await Group.findOne({ group_name: GROUP_NAME, emailVerificationToken: TOKEN }).then(Group => {
+
+        if (Group === null) {
+            req.flash('Group-Message', 'Invalid Request!!!');
+            msgs.push('Msg inserted');
+            res.redirect('/');
+        } else {
+            if (Group.emailVerificationTokenExpireDate >= new Date()) {
+                Group.emailVerificationToken = null;
+                Group.emailVerified = "yes";
+                Group.emailVerificationTokenExpireDate = null;
+
+
+
+                Group.save().then(saved => {
+                        if (saved) {
+                            req.flash('Group-Message', 'Email Registered Successfully. Please Login to continue!!!');
+                            msgs.push('Msg inserted');
+                            res.redirect('/');
+                        }
+                    })
+                    .catch(err => {
+                        console.log(err);
+                        req.flash('Group-Message', 'Email Verification Failed. Please Contact owner');
+                        msgs.push('Msg inserted');
+                        res.redirect('/');
+                    });
+
+            } else {
+                req.flash('Group-Message', 'Email Verification Link Expired. Please Register Your Group Again');
+                msgs.push('Msg inserted');
+                res.redirect('/');
+            }
+        }
+
+
+    });
+
+
+
+
+})
+
 /* --------------------------------------------------------------------------------------------------------*/
 
 
@@ -347,32 +411,18 @@ app.get('/password-reset/:groupName/:token', async function(req, res) {
 
 
 // Create Group Route
-
-
-async function secure_pass(password) {
-
-
-    var hashpass = '';
-
-
-    return hashpass;
-
-
-
-}
 app.post("/create-group", async function(req, res) {
 
-    const group = await Group.findOne({ group_name: req.body.group_name });
+    const group = await Group.findOne({ group_name: req.body.group_name.toLowerCase() });
 
-
-
-    var myData = new Group(req.body);
-
-    myData.group_name = myData.group_name.toLowerCase();
-    myData.resetToken = null;
-    myData.expireDate = null;
-
+    console.log(group)
     if (group === null) {
+
+        var myData = new Group(req.body);
+
+        myData.group_name = myData.group_name.toLowerCase();
+        myData.resetToken = null;
+        myData.expireDate = null;
 
 
         bcrypt.genSalt(parseInt(process.env.BC_SALT, 10), function(err, salt) {
@@ -384,20 +434,79 @@ app.post("/create-group", async function(req, res) {
                         console.log(err);
                     } else {
                         myData.password = hash;
+                        myData.emailVerified = "no";
+
                         console.log(myData.password);
 
-                        myData.save()
-                            .then(item => {
-                                req.flash('Group-Message', 'Group Created Successfully');
-                                msgs.push('Msg inserted');
-                                res.redirect('/');
-                            })
-                            .catch((err) => {
-                                console.log(err)
-                                req.flash('Group-Message', 'Group Creation Failed. Please Retry again!!!');
-                                msgs.push('Msg inserted');
-                                res.redirect('/')
-                            });
+                        crypto.randomBytes(32, (err, buffer) => {
+                            if (err) {
+                                console.log(err);
+                            }
+
+                            const email_token = buffer.toString('hex');
+                            myData.emailVerificationToken = email_token;
+                            var n = new Date();
+                            n.setMinutes(n.getMinutes() + 2);
+                            n.toLocaleString(undefined, { timeZone: 'Asia/Kolkata' })
+                            myData.emailVerificationTokenExpireDate = n;
+
+                            const group_name = myData.group_name;
+                            const reg_email = myData.email;
+                            myData.save()
+                                .then(async(item) => {
+
+                                    if (item) {
+                                        const link = "http://" + req.get('host').toString() + "/email-verify/" + group_name + "/" + email_token;
+
+                                        const accessToken = await oAuth2Client.getAccessToken();
+                                        console.log(accessToken);
+
+                                        const transport = nodemailer.createTransport({
+                                            service: 'gmail',
+                                            auth: {
+                                                type: 'OAuth2',
+                                                user: 'sanroxy30@gmail.com',
+                                                clientId: process.env.CLIENT_ID,
+                                                clientSecret: process.env.CLIENT_SECRET,
+                                                refreshToken: process.env.REFRESH_TOKEN,
+                                                accessToken: process.env.accessToken
+                                            }
+                                        })
+
+                                        const mailOptions = {
+                                            from: 'sanroxy30@gmail.com',
+                                            to: reg_email,
+                                            subject: `Email Verification for the Group ${group_name} by Real Time Chat`,
+                                            html: `
+                                <p> You have registered for Real Time Chat group named ${group_name}. We have sent the registration confirmation Mail. Please confirm to use Real Time Chat</p>
+                                <h3>Click on this <a href=${link}><u>Email Verify Link </u></a> to Verify Email</h3>
+                                <p>The Email Verification Link will be valid till ${n}`
+
+                                        }
+
+                                        const result = await transport.sendMail(mailOptions);
+
+                                        console.log(result);
+                                        req.flash('Group-Message', 'Email Verification Link sent Successfully!!!');
+                                        msgs.push('Msg inserted');
+                                        res.redirect('/');
+                                    } else {
+                                        req.flash('Group-Message', 'Group Creation Failed. Please Retry again!!!');
+                                        msgs.push('Msg inserted');
+                                        res.redirect('/')
+                                    }
+                                })
+                                .catch((err) => {
+                                    console.log(err)
+                                    req.flash('Group-Message', 'Group Creation Failed. Please Retry again!!!');
+                                    msgs.push('Msg inserted');
+                                    res.redirect('/')
+                                });
+
+
+
+                        });
+
                     }
                 });
             }
@@ -406,9 +515,16 @@ app.post("/create-group", async function(req, res) {
 
     } else {
 
-        req.flash('Group-Message', 'Group Already Created. Plz Login (or) create another');
-        msgs.push('Msg inserted');
-        res.redirect('/');
+        if (group.emailVerificationTokenExpireDate === null) {
+            req.flash('Group-Message', 'Group Already Created. Plz Login');
+            msgs.push('Msg inserted');
+            res.redirect('/');
+        } else if (group.emailVerificationTokenExpireDate > new Date()) {
+            req.flash('Group-Message', 'Group Already Created and Verification Link sent to Provided Email');
+            msgs.push('Msg inserted');
+            res.redirect('/');
+        }
+
     }
 
 
@@ -420,7 +536,7 @@ app.post("/create-group", async function(req, res) {
 
 app.post('/reset-password-post', async function(req, res) {
 
-    var g_name = req.body.group_name;
+    var g_name = req.body.group_name.toLowerCase();
     var pass = req.body.group_pass;
     var confirm_pass = req.body.group_confirm_pass;
 
@@ -430,7 +546,9 @@ app.post('/reset-password-post', async function(req, res) {
     const group_find = await Group.findOne({ group_name: g_name }).then(async Group => {
 
         console.log(Group)
-        if (pass === confirm_pass && (Date.now() <= Group.expireDate)) {
+        var d = new Date();
+        d.toLocaleString(undefined, { timeZone: 'Asia/Kolkata' })
+        if (pass === confirm_pass && (d <= Group.expireDate)) {
             Group.resetToken = null;
             Group.expireDate = null;
 
@@ -470,7 +588,10 @@ app.post('/reset-password-post', async function(req, res) {
 
 
         } else {
-            if (pass !== confirm_pass && (Date.now() <= Group.expireDate)) {
+            console.log(Group)
+            var d = new Date();
+            d.toLocaleString(undefined, { timeZone: 'Asia/Kolkata' })
+            if (pass !== confirm_pass && (d <= Group.expireDate)) {
                 req.flash('Group-Message', 'Password Mismatch!!!');
                 msgs.push('Msg inserted');
                 res.render('reset_password', {
