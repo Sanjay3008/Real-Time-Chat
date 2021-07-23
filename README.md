@@ -5,7 +5,7 @@ help of Socket.io which will listen on each user and send the messages to server
 ***
 # Modules Used
 
-1 . BackEnd 
+# 1. BackEnd 
 
 <ins>Server</ins>  
 
@@ -32,12 +32,12 @@ help of Socket.io which will listen on each user and send the messages to server
 <ins>Template</ins>  
 1. EJS  
 
-2 . <ins>Front End</ins> ------  
+# 2. <ins>Front End</ins> ------  
 1. Html  
 2. Css  
 3. Javascript  
 ---
-3 . <ins>DataBase</ins> ----  
+# 3. <ins>DataBase</ins> ----  
 ***
 1. MongoDB - Atlas  
 ***
