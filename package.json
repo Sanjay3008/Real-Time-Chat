@@ -19,7 +19,7 @@
         "moment": "^2.29.1",
         "mongodb": "^3.6.10",
         "mongoose": "^5.13.2",
-        "nodemailer": "^6.6.3",
+        "nodemailer": "^6.7.2",
         "nodemon": "^2.0.12",
         "passport": "^0.4.1",
         "socket.io": "^4.1.3",
